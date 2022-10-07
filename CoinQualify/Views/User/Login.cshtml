@@ -1,0 +1,112 @@
+﻿@model IEnumerable<CoinQualify.Models.User>
+@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Login";
+    Layout = "";
+    int? id = Context.Session.GetInt32("id");
+}
+
+@if (!id.HasValue)
+{
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <title>Oturum Aç</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link href="~/css/signin.css" rel="stylesheet">
+    </head>
+    <body class="text-center">
+
+        <main class="form-signin">
+            <form action="/User/Signin" method="POST" autocomplete="off">
+                <img class="mb-4" src="~/assets/img/login.jpg" alt="" width="256" height="256">
+
+                <h1 class="h3 mb-3 fw-normal tx1">Lütfen Oturum Açın</h1>
+                <div>
+
+                    <div class="form-group">
+                        <input type="text" name="Usermail" class="form-control" placeholder="Email" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="Pass" class="form-control" placeholder="Şifre" />
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-success" style="padding-right:15px;">Giriş Yap</button>
+                    <button type="button" onclick="$('#UserModal').modal('show')" class="btn btn-primary">Üye ol</button>
+                    <br />
+                    <a style="padding-top:15px;" class="tx1" asp-area="" asp-controller="Home" asp-action="Dashboard">Anasayfa'ya dön</a>
+
+
+                </div>
+
+                <p class="mt-5 mb-3 text-muted">&copy; CoinQualify</p>
+            </form>
+
+        </main>
+
+    </body>
+</html>
+}
+
+else
+{
+<link href="~/css/signin.css" rel="stylesheet">
+<h1 class="tx1">Hoş Geldiniz !</h1>
+<br />
+<br />
+<a style="margin-top:15px;margin-left:15px;" class="tx1" asp-area="" asp-controller="Home" asp-action="Dashboard">Anasayfa'ya dön</a>
+}
+<div class="modal" id="UserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Üye ol</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="/User/AddUser" autocomplete="off">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="User_id" id="User_id" class="form-control">
+                        <input type="text" style="margin-bottom: 10px;" name="User_name" id="User_name" class="form-control" placeholder="İsim">
+                        <input type="text" style="margin-bottom: 10px;" name="User_mail" id="User_mail" class="form-control" placeholder="Email">
+                        <input type="text" style="margin-bottom: 10px;" name="User_pw" id="User_pw" class="form-control" placeholder="Şifre">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()" data-dismiss="modal">Kapat</button>
+                    <button type="submit" id="updateBtn" class="btn btn-primary">Üye ol</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@section Scripts{
+    <script>
+        $(() => clearForm())
+        function updateForm(User_id) {
+            fetch('/User/UserDetails?User_id=' + User_id)
+                .then(res => res.json())
+                .then(res => {
+                    $('#User_id').val(res.user_id)
+                    $('#User_name').val(res.user_name)
+                    $('#User_pw').val(res.ser_pw)
+                })
+            $('#updateBtn').show();
+            $('#UserModal').modal('show');
+        }
+        function clearForm() {
+            $('#User_id').val(null)
+            $('#User_name').val(null)
+            $('#User_pw').val(null)
+            $('#updateBtn').hide();
+        }
+    </script>
+}

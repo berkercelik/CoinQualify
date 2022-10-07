@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <script src="https://kit.fontawesome.com/cae3ff1def.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <p id="counter"></p>
+    <table class="table-hover table-dark">
+        <tr class="theadx">
+            <th>
+                <span style="font-size: 24px; color: white;" title="Sıralama">
+                    <i class="fas fa-chart-line"></i>
+                </span>
+            </th>
+            <th scope="col">Sembol</th>
+            <th scope="col">Coin Adı</th>
+            <th scope="col">Fiyat</th>
+            <th scope="col">Market Değeri</th>
+            <th scope="col">24h Hacim</th>
+        </tr>
+        <tbody id="coinapi" class="chart">
+            <tr>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/coinapi.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        getItems();
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function addClass() {
+            await sleep(2000);            
+            $('td').attr('class', 'chartx');
+            $('th').attr('class', 'theadx');    
+        }
+        addClass();
+    </script>
+</body>
+</html>
+

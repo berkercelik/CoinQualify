@@ -1,0 +1,118 @@
+﻿@model IEnumerable<CoinQualify.Models.Coin>
+@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Wallet";
+    Layout = "_Layout";
+    int? id = Context.Session.GetInt32("id");
+}
+
+<button type="button" onclick="$('#CoinModal').modal('show')" class="btn btn-primary" >Coin Ekle</button>
+<p style="padding-top:4px !important;"></p>
+
+<table class="table table-hover">
+    <thead>
+    <th scope="col">Sembol</th>
+    <th scope="col">Coin Adı</th>
+    <th scope="col">Miktar</th>
+    <th scope="col">Alış Fiyatı</th>
+    <th scope="col">Satış Fiyatı</th>
+    <th scope="col">Kar & Zarar</th>
+    <th scope="col"></th>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Coin_symbol</td>
+                <td>@item.Coin_name</td>
+                <td>@item.Usercoin_amount</td>
+                <td>@item.Usercoin_buyprice</td>
+                <td>@item.Usercoin_sellprice</td>
+                <td name="Usercoin_profit">%@item.Usercoin_profit</td>
+                <td>
+                    <a class="btn btn-danger" asp-route-id="@item.Coin_id" asp-action="DeleteCoin">Sil</a>
+                    <button class="btn btn-secondary" onclick="updateForm(@item.Coin_id)" type="button">Güncelle</button>
+                    <button class="btn btn-info" onclick="profitCal(@item.Coin_id)" type="button">Kar & Zarar Hesapla</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal" id="CoinModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Coin Ekle:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="/User/AddCoin" autocomplete="off">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="Coin_id" id="Coin_id" class="form-control">
+                        <input type="text" name="Coin_symbol" id="Coin_symbol" class="form-control" placeholder="Coin Sembolü">
+                        <input type="text" name="Coin_name" id="Coin_name" class="form-control" placeholder="Coin Adı">
+                        <input type="text" name="Usercoin_amount" id="Usercoin_amount" class="form-control" placeholder="Miktar">
+                        <input type="text" name="Usercoin_buyprice" id="Usercoin_buyprice" class="form-control" placeholder="Alış Fiyatı">
+                        <input type="text" name="Usercoin_sellprice" id="Usercoin_sellprice" class="form-control" placeholder="Satış Fiyatı">
+                        <input type="hidden" name="Usercoin_profit" id="Usercoin_profit" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()" data-dismiss="modal">Kapat</button>
+                    <button type="submit" id="saveBtn" class="btn btn-primary">Ekle</button>
+                    <button type="submit" id="updateBtn" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(() => clearForm())
+        function updateForm(Coin_id) {
+            fetch('/User/CoinDetails?Coin_id=' + Coin_id)
+                .then(res => res.json())
+                .then(res => {
+                    $('#Coin_id').val(res.coin_id)
+                    $('#Coin_name').val(res.coin_name)
+                    $('#Coin_symbol').val(res.coin_symbol)
+                    $('#Usercoin_amount').val(res.usercoin_amount)
+                    $('#Usercoin_buyprice').val(res.usercoin_buyprice)
+                    $('#Usercoin_sellprice').val(res.usercoin_sellprice)
+                    $('Usercoin_profit').val(res.usercoin_profit)
+                })
+            $('#saveBtn').hide();
+            $('#updateBtn').show();
+            $('#CoinModal').modal('show');
+        }
+        function clearForm() {
+            $('#Coin_id').val(null)
+            $('#Coin_name').val(null)
+            $('#Coin_symbol').val(null)
+            $('#Usercoin_amount').val(null)
+            $('#Usercoin_buyprice').val(null)
+            $('#Usercoin_sellprice').val(null)
+            $('#saveBtn').show();
+            $('#updateBtn').hide();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function profitCal(Coin_id) {
+            fetch('/Coin/CalculateProfit?Coin_id=' + Coin_id)
+            await sleep(1000);  
+            location.reload(true);
+            console.log("refresh");
+        }
+        function deleteCoin(Coin_id){
+            fetch('/User/CoinDetails?Coin_id=' + Coin_id)
+            
+        }
+    </script>
+}
